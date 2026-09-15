@@ -1,0 +1,5 @@
+telethon
+aiohttp
+python-dotenv
+yt-dlp
+duckduckgo_search
