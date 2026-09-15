@@ -18,7 +18,7 @@ from services import (
 )
 
 BLOCKED_DOMAINS = (".ru", ".rf", ".su", "rbk.ru", "yandex", "mail.ru", "vk.com", "ok.ru")
-ALLOWED_FRIEND_ID = 7958011434
+ALLOWED_FRIEND_ID = 
 DALBOEBS = []
 
 
