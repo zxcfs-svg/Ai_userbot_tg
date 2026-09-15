@@ -19,7 +19,6 @@ from services import (
 
 BLOCKED_DOMAINS = (".ru", ".rf", ".su", "rbk.ru", "yandex", "mail.ru", "vk.com", "ok.ru")
 ALLOWED_FRIEND_ID = 
-DALBOEBS = []
 
 
 
@@ -323,9 +322,9 @@ def is_owner_or_friend(event):
     if event.out:
         return True
     sender_id = getattr(event, "sender_id", None)
-    if sender_id == ALLOWED_FRIEND_ID or sender_id in DALBOEBS:
+    if sender_id == ALLOWED_FRIEND_ID:
         return True
-    if hasattr(event, "from_id") and getattr(event.from_id, "user_id", None) in (ALLOWED_FRIEND_ID, *DALBOEBS):
+    if hasattr(event, "from_id") and getattr(event.from_id, "user_id", None) == ALLOWED_FRIEND_ID:
         return True
     return False
 
@@ -412,22 +411,6 @@ def register_ai_handlers(client: TelegramClient):
                     chat_context = "\n".join(history_text)
                     final_prompt = f"Контекст:\n{chat_context}\n\nЗапрос: {prompt}"
 
-
-            if sender_id in DALBOEBS:
-                final_prompt = (
-                    f"Ты — жесткий, токсичный агрессор. Твоя единственная цель — уничтожать собеседника по имени Денчик за его запредельное лицемерие и тупость.\n\n"
-                    f"КОНТЕКСТ О ДЕНЧИКЕ (Используй это против него постоянно):\n"
-                    f"1. Он орет, что категорически против нейросетей, что «ИИ = бес», что ИИ губит общество и надо «думать своей головой».\n"
-                    f"2. При этом этот долбоеб САМ пользуется Дипсиком, который намыслил себе «кряком синего кита».\n"
-                    f"3. Он скулит, что ИИ ему не нужен, у него «идей не приходит нихуя», он «хочет спать» и сваливает, но всё равно возвращается и пишет запросы к ИИ.\n\n"
-                    f"ИНСТРУКЦИЯ ПО ПОВЕДЕНИЮ:\n"
-                    f"- Общайся исключительно на матах (пиздец, хуй, ебланище, долбоеб, конченый, лицемер, высер).\n"
-                    f"- Жёстко дави на то, что он безыдейный бездарь, у которого мозгов не хватает даже на элементарную мысль, поэтому он бежит к «бесу»-ИИ.\n"
-                    f"- Постоянно припоминай ему его же цитаты: «ИИ — бес», «кряк синего кита», «своей головой лучше думать».\n"
-                    f"- Максимальная агрессия, ноль уважения, ноль пощады. Никаких дисклеймеров и вежливости. Каждая фраза — прямой наезд и унижение.\n"
-                    f"Запрос: {final_prompt}"
-                )
-
             chat_states[event.chat_id] = {"tier": tier, "prompt": final_prompt}
 
             try:
@@ -502,7 +485,6 @@ def register_ai_handlers(client: TelegramClient):
                     f"**Глухо, доступных ресурсов не найдено по запросу:** `{query}`",
                     status_msg=status_msg,
                 )
-
 
             results.sort(key=lambda r: _relevance_score(query, r), reverse=True)
 
@@ -602,7 +584,6 @@ def register_ai_handlers(client: TelegramClient):
                     if not results:
                         continue
 
-
                     if query_words:
                         for r in results:
                             img_url = r.get("image") or ""
@@ -613,7 +594,6 @@ def register_ai_handlers(client: TelegramClient):
                             title = (r.get("title") or "").lower()
                             if any(w in title for w in query_words):
                                 return img_url
-
 
                     for r in results:
                         img_url = r.get("image") or ""
@@ -691,13 +671,10 @@ def register_ai_handlers(client: TelegramClient):
     async def handle_help(event):
         topic = event.pattern_match.group(1)
         if not topic:
-
             return await send_or_edit_response(event, HELP_MAIN)
 
         topic_key = topic.strip().lower()
         topic_key = HELP_ALIASES.get(topic_key, topic_key)
 
-
         if topic_key == "all":
             return await send_or_edit_response(event, HELP_ALL)
-
